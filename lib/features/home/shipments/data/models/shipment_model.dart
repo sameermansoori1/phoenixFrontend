@@ -22,4 +22,14 @@ class ShipmentModel {
       quantity: json['quantity'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      '_id': id,
+      'userId': userId,
+      'date': date.toIso8601String(),
+      'status': status,
+      'quantity': quantity,
+    };
+  }
 }

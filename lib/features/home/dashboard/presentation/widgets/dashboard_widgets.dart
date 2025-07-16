@@ -119,6 +119,7 @@ class DeliveryMedicationCard extends StatelessWidget {
 
   Widget _buildDeliveryCard() {
     return Container(
+      height: 199,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -173,6 +174,7 @@ class DeliveryMedicationCard extends StatelessWidget {
 
   Widget _buildMedicationCard() {
     return Container(
+      height: 199,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -186,6 +188,8 @@ class DeliveryMedicationCard extends StatelessWidget {
         ],
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
             padding: const EdgeInsets.all(12),
@@ -201,7 +205,7 @@ class DeliveryMedicationCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Remaining Medication',
+            'Remaining Meds ',
             style: AppTextStyles.textTheme.bodyMedium?.copyWith(
               color: AppColors.textSecondary,
             ),

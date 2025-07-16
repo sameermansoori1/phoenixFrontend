@@ -7,14 +7,17 @@ class ShipmentRemoteDataSource {
   final NetworkClient networkClient;
   ShipmentRemoteDataSource({required this.networkClient});
 
-  Future<List<ShipmentModel>> getShipments() async {
+  Future<List<ShipmentModel>> getShipments(
+      {void Function(List<ShipmentModel>)? onFetched}) async {
     final token = await SecureStorage.read('auth_token');
     final response = await networkClient.get(
       Endpoints.shipment,
       headers: {'Authorization': 'Bearer $token'},
     );
-    return (response.data as List)
+    final shipments = (response.data as List)
         .map((json) => ShipmentModel.fromJson(json))
         .toList();
+    if (onFetched != null) onFetched(shipments);
+    return shipments;
   }
 }

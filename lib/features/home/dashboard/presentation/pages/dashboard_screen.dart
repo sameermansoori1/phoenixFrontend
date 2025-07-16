@@ -4,10 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:phoenix_app/core/theme/app_colors.dart';
 import 'package:phoenix_app/core/theme/app_text_styles.dart';
-import 'package:phoenix_app/core/utils/network_client.dart';
-import 'package:phoenix_app/features/home/dashboard/data/datasources/dashboard_local_data_source.dart';
-import 'package:phoenix_app/features/home/dashboard/data/datasources/dashboard_remote_data_source.dart';
-import 'package:phoenix_app/features/home/dashboard/data/repositories/dashboard_repository_impl.dart';
 import 'package:phoenix_app/features/home/dashboard/domain/usecases/get_dashboard_info_usecase.dart';
 import 'package:phoenix_app/features/home/dashboard/presentation/bloc/dashboardBloc/dashboard_bloc.dart';
 import 'package:phoenix_app/features/home/dashboard/presentation/bloc/dashboardBloc/dashboard_event.dart';
@@ -15,7 +11,8 @@ import 'package:phoenix_app/features/home/dashboard/presentation/widgets/dashboa
 import 'package:phoenix_app/features/home/dashboard/presentation/bloc/dashboardBloc/dashboard_state.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+  final GetDashboardInfoUseCase getDashboardInfoUseCase;
+  const DashboardScreen({super.key, required this.getDashboardInfoUseCase});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -24,19 +21,9 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
-    final networkClient = NetworkClient();
-    final remoteDataSource =
-        DashboardRemoteDataSource(networkClient: networkClient);
-    final localDataSource = DashboardLocalDataSource();
-    final repository = DashboardRepositoryImpl(
-      remoteDataSource: remoteDataSource,
-      localDataSource: localDataSource,
-    );
-    final getDashboardInfoUseCase = GetDashboardInfoUseCase(repository);
-
     return BlocProvider<DashboardBloc>(
       create: (_) =>
-          DashboardBloc(getDashboardInfoUseCase: getDashboardInfoUseCase)
+          DashboardBloc(getDashboardInfoUseCase: widget.getDashboardInfoUseCase)
             ..add(FetchDashboardInfo()),
       child: Scaffold(
         appBar: PreferredSize(
@@ -317,6 +304,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildAppointmentsList(List<Appointment> appointments) {
     if (appointments.isEmpty) {
       return Container(
+        width: double.infinity,
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: AppColors.surface,
@@ -357,6 +345,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildMedicationsList(List<Medication> medications) {
     if (medications.isEmpty) {
       return Container(
+        width: double.infinity,
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
           color: AppColors.surface,

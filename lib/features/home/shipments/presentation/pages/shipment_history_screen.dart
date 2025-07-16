@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:phoenix_app/features/home/shipments/data/datasources/shipment_local_data_source.dart';
 import '../../data/datasources/shipment_remote_data_source.dart';
 import '../../data/repositories/shipment_repository_impl.dart';
 import '../../domain/usecases/get_shipments_usecase.dart';
@@ -15,8 +16,9 @@ class ShipmentHistoryScreen extends StatelessWidget {
     final networkClient = NetworkClient();
     final remoteDataSource =
         ShipmentRemoteDataSource(networkClient: networkClient);
-    final repository =
-        ShipmentRepositoryImpl(remoteDataSource: remoteDataSource);
+    final localDataSource = ShipmentLocalDataSource();
+    final repository = ShipmentRepositoryImpl(
+        remoteDataSource: remoteDataSource, localDataSource: localDataSource);
     final getShipmentsUseCase = GetShipmentsUseCase(repository);
 
     return Scaffold(
@@ -24,10 +26,6 @@ class ShipmentHistoryScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
-          onPressed: () => Navigator.of(context).maybePop(),
-        ),
         title: const Text('Shipment History',
             style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
         centerTitle: true,
@@ -115,27 +113,37 @@ class ShipmentHistoryScreen extends StatelessWidget {
             Expanded(
               child: BlocBuilder<ShipmentBloc, ShipmentState>(
                 builder: (context, state) {
-                  if (state is ShipmentLoading || state is ShipmentInitial) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state is ShipmentError) {
-                    return Center(child: Text(state.message));
-                  } else if (state is ShipmentLoaded) {
-                    final shipments = state.shipments;
-                    if (shipments.isEmpty) {
-                      return const Center(child: Text('No shipments found.'));
-                    }
-                    return ListView.separated(
-                      key: ValueKey(shipments.length),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      itemCount: shipments.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 12),
-                      itemBuilder: (context, index) {
-                        return ShipmentCard(shipment: shipments[index]);
-                      },
-                    );
-                  }
-                  return const SizedBox.shrink();
+                  return RefreshIndicator(
+                    onRefresh: () async {
+                      context.read<ShipmentBloc>().add(FetchShipments());
+                    },
+                    child: () {
+                      if (state is ShipmentLoading ||
+                          state is ShipmentInitial) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (state is ShipmentError) {
+                        return Center(child: Text(state.message));
+                      } else if (state is ShipmentLoaded) {
+                        final shipments = state.shipments;
+                        if (shipments.isEmpty) {
+                          return const Center(
+                              child: Text('No shipments found.'));
+                        }
+                        return ListView.separated(
+                          key: ValueKey(shipments.length),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          itemCount: shipments.length,
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(height: 12),
+                          itemBuilder: (context, index) {
+                            return ShipmentCard(shipment: shipments[index]);
+                          },
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    }(),
+                  );
                 },
               ),
             ),

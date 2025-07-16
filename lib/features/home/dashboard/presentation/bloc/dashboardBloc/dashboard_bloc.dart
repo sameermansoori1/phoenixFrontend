@@ -4,6 +4,8 @@ import 'dashboard_event.dart';
 import 'dashboard_state.dart';
 import 'package:phoenix_app/features/home/dashboard/domain/usecases/get_dashboard_info_usecase.dart';
 import 'package:phoenix_app/features/home/dashboard/domain/entities/dashboard_info.dart';
+import 'package:phoenix_app/features/home/dashboard/data/repositories/dashboard_repository_impl.dart';
+import 'package:phoenix_app/features/home/dashboard/data/datasources/dashboard_local_data_source.dart';
 
 class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   final GetDashboardInfoUseCase getDashboardInfoUseCase;
@@ -19,7 +21,43 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     FetchDashboardInfo event,
     Emitter<DashboardState> emit,
   ) async {
-    emit(DashboardLoading());
+    // 1. Try to load cached data and show it immediately
+    DashboardLocalDataSource? localDataSource;
+    if (getDashboardInfoUseCase.repository is DashboardRepositoryImpl) {
+      localDataSource =
+          (getDashboardInfoUseCase.repository as DashboardRepositoryImpl)
+              .localDataSource;
+    }
+    if (localDataSource != null) {
+      final cached = await localDataSource.getCachedDashboardInfo();
+      if (cached != null) {
+        emit(DashboardLoaded(
+          patientInfo: PatientInfo(
+            name: cached.fullName,
+            patientId: cached.patientId,
+            currentPlan: cached.currentPlan,
+            status: cached.status,
+          ),
+          deliveryInfo: DeliveryInfo(
+            nextDeliveryDate: cached.nextDeliveryDate,
+            daysRemaining:
+                cached.nextDeliveryDate.difference(DateTime.now()).inDays,
+          ),
+          medicationInfo: MedicationInfo(
+            remainingPercentage: cached.remainingMedication,
+            daysLeft: cached.remainingMedication,
+          ),
+          appointments: const [],
+          medications: const [],
+        ));
+      } else {
+        emit(DashboardLoading());
+      }
+    } else {
+      emit(DashboardLoading());
+    }
+
+    // 2. Try to fetch from API
     try {
       final DashboardInfo info = await getDashboardInfoUseCase();
       emit(DashboardLoaded(
@@ -57,7 +95,9 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         medications: const [],
       ));
     } catch (e) {
-      emit(DashboardError(message: 'Failed to load dashboard data'));
+      if (state is! DashboardLoaded) {
+        emit(DashboardError(message: 'Failed to load dashboard data'));
+      }
     }
   }
 

@@ -14,7 +14,9 @@ class DashboardRepositoryImpl implements DashboardRepository {
   @override
   Future<DashboardInfo> getDashboardInfo() async {
     try {
-      final response = await remoteDataSource.getDashboardInfo();
+      final response = await remoteDataSource.getDashboardInfo(
+        onFetched: (model) => localDataSource.cacheDashboardInfo(model),
+      );
       return DashboardInfo(
         fullName: response.fullName,
         patientId: response.patientId,
@@ -24,15 +26,27 @@ class DashboardRepositoryImpl implements DashboardRepository {
         status: response.status,
       );
     } catch (e) {
-      // Fallback to local data
-      final response = await localDataSource.getDashboardInfo();
+      // Fallback to local cache
+      final cached = await localDataSource.getCachedDashboardInfo();
+      if (cached != null) {
+        return DashboardInfo(
+          fullName: cached.fullName,
+          patientId: cached.patientId,
+          currentPlan: cached.currentPlan,
+          nextDeliveryDate: cached.nextDeliveryDate,
+          remainingMedication: cached.remainingMedication,
+          status: cached.status,
+        );
+      }
+      // Fallback to mock data if no cache
+      final fallback = await localDataSource.getDashboardInfo();
       return DashboardInfo(
-        fullName: response.fullName,
-        patientId: response.patientId,
-        currentPlan: response.currentPlan,
-        nextDeliveryDate: response.nextDeliveryDate,
-        remainingMedication: response.remainingMedication,
-        status: response.status,
+        fullName: fallback.fullName,
+        patientId: fallback.patientId,
+        currentPlan: fallback.currentPlan,
+        nextDeliveryDate: fallback.nextDeliveryDate,
+        remainingMedication: fallback.remainingMedication,
+        status: fallback.status,
       );
     }
   }

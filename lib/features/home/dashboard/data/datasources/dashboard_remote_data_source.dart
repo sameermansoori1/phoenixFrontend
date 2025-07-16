@@ -8,7 +8,8 @@ class DashboardRemoteDataSource {
 
   DashboardRemoteDataSource({required this.networkClient});
 
-  Future<DashboardResponseModel> getDashboardInfo() async {
+  Future<DashboardResponseModel> getDashboardInfo(
+      {void Function(DashboardResponseModel)? onFetched}) async {
     final token = await SecureStorage.read('auth_token');
     final response = await networkClient.get(
       Endpoints.dashboard,
@@ -16,6 +17,8 @@ class DashboardRemoteDataSource {
         'Authorization': 'Bearer $token',
       },
     );
-    return DashboardResponseModel.fromJson(response.data);
+    final model = DashboardResponseModel.fromJson(response.data);
+    if (onFetched != null) onFetched(model);
+    return model;
   }
 }

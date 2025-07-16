@@ -25,4 +25,15 @@ class DashboardResponseModel {
       status: json['status'] as String,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'fullName': fullName,
+      'patientId': patientId,
+      'currentPlan': currentPlan,
+      'nextDeliveryDate': nextDeliveryDate.toIso8601String(),
+      'remainingMedication': remainingMedication,
+      'status': status,
+    };
+  }
 }

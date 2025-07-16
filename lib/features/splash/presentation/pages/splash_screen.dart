@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:phoenix_app/core/utils/secure_storage.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -35,10 +36,14 @@ class _SplashScreenState extends State<SplashScreen>
     // Start the animation
     _animationController.forward();
 
-    // Navigate after delay
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        context.pushReplacement('/login');
+    // Navigate after delay and check login state
+    Future.delayed(const Duration(seconds: 2), () async {
+      if (!mounted) return;
+      final token = await SecureStorage.read('auth_token');
+      if (token != null && token.isNotEmpty) {
+        context.go('/');
+      } else {
+        context.go('/login');
       }
     });
   }
