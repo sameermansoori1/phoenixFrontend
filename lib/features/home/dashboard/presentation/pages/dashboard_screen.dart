@@ -79,10 +79,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             color: AppColors.background.withValues(alpha: 0.15),
                             borderRadius: BorderRadius.circular(30),
                           ),
-                          child: Icon(
-                            Icons.person,
-                            color: AppColors.surface,
-                            size: 32,
+                          child: Image.asset(
+                            'assets/icons/male.png',
+                            fit: BoxFit.cover,
                           ),
                         ),
                       ],
