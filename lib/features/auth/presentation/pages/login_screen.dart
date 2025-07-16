@@ -6,6 +6,12 @@ import 'package:phoenix_app/features/auth/presentation/bloc/loginBloc/login_even
 import 'package:phoenix_app/features/auth/presentation/widgets/custom_button.dart';
 import 'package:phoenix_app/features/auth/presentation/widgets/custom_text_field.dart';
 import 'package:phoenix_app/features/auth/presentation/widgets/social_login_button.dart';
+import 'package:phoenix_app/core/utils/network_client.dart';
+import 'package:phoenix_app/features/auth/data/datasources/auth_remote_data_source.dart';
+import 'package:phoenix_app/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:phoenix_app/features/auth/domain/usecases/login_usecase.dart';
+import 'package:go_router/go_router.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,28 +23,32 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   late TextEditingController _emailController;
   late TextEditingController _passwordController;
-  late LoginBloc _loginBloc;
+  // late LoginBloc _loginBloc;
 
   @override
   void initState() {
     super.initState();
     _emailController = TextEditingController();
     _passwordController = TextEditingController();
-    _loginBloc = LoginBloc();
   }
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _loginBloc.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // Dependency wiring
+    final networkClient = NetworkClient();
+    final remoteDataSource = AuthRemoteDataSource(networkClient: networkClient);
+    final repository = AuthRepositoryImpl(remoteDataSource: remoteDataSource);
+    final loginUseCase = LoginUseCase(repository);
+
     return BlocProvider(
-      create: (context) => _loginBloc,
+      create: (context) => LoginBloc(loginUseCase: loginUseCase),
       child: Scaffold(
         backgroundColor: AppColors.bgContainer,
         body: SafeArea(
@@ -51,14 +61,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     backgroundColor: AppColors.success,
                   ),
                 );
-                // Navigate to home screen
-                // Navigator.pushReplacementNamed(context, '/home');
+                // Navigate to dashboard
+                context.go('/');
               } else if (state is LoginFailure) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.error),
-                    backgroundColor: AppColors.error,
-                  ),
+                // Print the real error to the console
+                print('Login error: ${state.error}');
+                // Cancel any previous toasts and show the new one immediately
+                Fluttertoast.cancel();
+                Fluttertoast.showToast(
+                  msg: state.error,
+                  toastLength: Toast.LENGTH_SHORT,
+                  gravity: ToastGravity.BOTTOM,
+                  backgroundColor: Colors.red,
+                  textColor: Colors.white,
                 );
               }
             },
@@ -172,6 +187,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 enabled: !isLoading,
+                errorText: !formState.isEmailValid && formState.email.isNotEmpty
+                    ? 'Please enter a valid email'
+                    : null,
                 onChanged: (value) {
                   context.read<LoginBloc>().add(LoginEmailChanged(value));
                 },

@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final location = GoRouterState.of(context).uri.toString();
 
     int newIndex = 0;
-    if (location.startsWith('/dash')) {
+    if (location.startsWith('/shipments')) {
       newIndex = 1;
     } else if (location.startsWith('/profile')) {
       newIndex = 2;
@@ -56,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
         context.go('/');
         break;
       case 1:
-        context.go('/dash');
+        context.go('/shipments');
         break;
       case 2:
         context.go('/profile');

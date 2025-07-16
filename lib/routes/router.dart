@@ -3,9 +3,15 @@ import 'package:go_router/go_router.dart';
 import 'package:phoenix_app/features/auth/presentation/pages/login_screen.dart';
 import 'package:phoenix_app/features/home/dashboard/presentation/pages/dashboard_screen.dart';
 import 'package:phoenix_app/features/home/home_screen.dart';
-import 'package:phoenix_app/features/home/shipments/presentation/pages/shipments_screen.dart';
+import 'package:phoenix_app/features/home/shipments/presentation/pages/shipment_history_screen.dart';
 import 'package:phoenix_app/features/home/profile/presentation/pages/profile_screen.dart';
 import 'package:phoenix_app/features/splash/presentation/pages/splash_screen.dart';
+import 'package:phoenix_app/features/home/shipments/presentation/bloc/shipment_bloc.dart';
+import 'package:phoenix_app/features/home/shipments/data/datasources/shipment_remote_data_source.dart';
+import 'package:phoenix_app/features/home/shipments/data/repositories/shipment_repository_impl.dart';
+import 'package:phoenix_app/features/home/shipments/domain/usecases/get_shipments_usecase.dart';
+import 'package:phoenix_app/core/utils/network_client.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 // Custom page builder for fade transitions
 Page<T> buildFadePage<T extends Object?>({
@@ -69,16 +75,29 @@ final GoRouter router = GoRouter(
         GoRoute(
           path: '/',
           pageBuilder: (context, state) => buildFadePage(
-            child: const ShipmentsScreen(),
+            child: const DashboardScreen(),
             state: state,
           ),
         ),
         GoRoute(
-          path: '/dash',
-          pageBuilder: (context, state) => buildFadePage(
-            child: const DashScreen(),
-            state: state,
-          ),
+          path: '/shipments',
+          pageBuilder: (context, state) {
+            final networkClient = NetworkClient();
+            final remoteDataSource =
+                ShipmentRemoteDataSource(networkClient: networkClient);
+            final repository =
+                ShipmentRepositoryImpl(remoteDataSource: remoteDataSource);
+            final getShipmentsUseCase = GetShipmentsUseCase(repository);
+            return buildFadePage(
+              child: BlocProvider(
+                create: (_) =>
+                    ShipmentBloc(getShipmentsUseCase: getShipmentsUseCase)
+                      ..add(FetchShipments()),
+                child: const ShipmentHistoryScreen(),
+              ),
+              state: state,
+            );
+          },
         ),
         GoRoute(
           path: '/profile',
