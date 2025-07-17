@@ -42,7 +42,8 @@ dependencies:
   flutter_bloc: 
   equatable:
   intl: 
-  shared_preferences: 
+  shared_preferences:
+  url_launcher: 
 
 
 dev_dependencies:

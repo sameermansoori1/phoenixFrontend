@@ -44,7 +44,7 @@ class PatientInfoCard extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
-                  color: AppColors.success,
+                  color: _getStatusColor(patientInfo.status),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -67,6 +67,19 @@ class PatientInfoCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'active':
+        return AppColors.success; // Green
+      case 'inactive':
+        return AppColors.error; // Red
+      case 'billing ok':
+        return AppColors.warning; // Yellow/Orange
+      default:
+        return AppColors.textSecondary; // Default Gray
+    }
   }
 
   Widget _buildInfoRow(String label, String value,

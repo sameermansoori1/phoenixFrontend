@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
     int newIndex = 0;
     if (location.startsWith('/shipments')) {
       newIndex = 1;
-    } else if (location.startsWith('/profile')) {
+    } else if (location.startsWith('/aboutMe')) {
       newIndex = 2;
     }
 
@@ -59,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
         context.go('/shipments');
         break;
       case 2:
-        context.go('/profile');
+        context.go('/aboutMe');
         break;
     }
   }
@@ -81,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Expanded(
                 child: _buildNavItem("assets/icons/box.png", 'Shipments', 1)),
             Expanded(
-                child: _buildNavItem("assets/icons/user.png", 'Profile', 2)),
+                child: _buildNavItem("assets/icons/user.png", 'About Me', 2)),
           ],
         ),
       ),

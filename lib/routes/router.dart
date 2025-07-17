@@ -4,7 +4,7 @@ import 'package:phoenix_app/features/auth/presentation/pages/login_screen.dart';
 import 'package:phoenix_app/features/home/dashboard/presentation/pages/dashboard_screen.dart';
 import 'package:phoenix_app/features/home/home_screen.dart';
 import 'package:phoenix_app/features/home/shipments/presentation/pages/shipment_history_screen.dart';
-import 'package:phoenix_app/features/home/profile/presentation/pages/profile_screen.dart';
+import 'package:phoenix_app/features/home/aboutMe/presentation/pages/about_me_screen.dart';
 import 'package:phoenix_app/features/splash/presentation/pages/splash_screen.dart';
 import 'package:phoenix_app/features/home/shipments/presentation/bloc/shipment_bloc.dart';
 import 'package:phoenix_app/features/home/shipments/data/datasources/shipment_remote_data_source.dart';
@@ -121,9 +121,9 @@ final GoRouter router = GoRouter(
           },
         ),
         GoRoute(
-          path: '/profile',
+          path: '/aboutMe',
           pageBuilder: (context, state) => buildFadePage(
-            child: const ProfileScreen(),
+            child: const AboutMeScreen(),
             state: state,
           ),
         ),
