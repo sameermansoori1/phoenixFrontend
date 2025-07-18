@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "711725729724",
+    "project_id": "phoenix-app-f2cdc",
+    "storage_bucket": "phoenix-app-f2cdc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:711725729724:android:aa1a3f4cdf1f32d3cc0db9",
+        "android_client_info": {
+          "package_name": "com.example.phoenix_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzQKBAsshP64iVb-XjsRp6kUDCtkR83G0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

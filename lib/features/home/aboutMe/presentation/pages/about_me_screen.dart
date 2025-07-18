@@ -156,7 +156,7 @@ class AboutMeScreen extends StatelessWidget {
                     'View my resume',
                     Icons.description,
                     Colors.green[700]!,
-                    'https://www.linkedin.com/safety/go?url=https%3A%2F%2Fdrive.google.com%2Ffile%2Fd%2F1DIvDZ16cexTEbVYq0DgH8La4hqT3IaIt%2Fview%3Fusp%3Dsharing&trk=flagship-messaging-web&messageThreadUrn=urn%3Ali%3AmessagingThread%3A2-NWUwMDAwNjEtODE2ZC00YzI2LWE3OGEtZjFkYzY1ZDliNTA4XzEwMA%3D%3D&lipi=urn%3Ali%3Apage%3Ad_flagship3_profile_view_base%3Bc7O6EFRURqOoM8zx3H7dUw%3D%3D',
+                    'https://drive.google.com/file/d/1DIvDZ16cexTEbVYq0DgH8La4hqT3IaIt/view?usp=sharing',
                   ),
                 ],
               ),
